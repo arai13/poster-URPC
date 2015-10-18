@@ -1,0 +1,34 @@
+div.div_center{
+	width: 100%;	
+
+}
+
+i, span, p {
+	display: inline-block;
+}
+
+names {
+	width: 100%;
+
+}
+
+h4 {
+	width: 100%;
+	text-align: center;
+}
+h5 {
+	font-style: italic;
+	font-weight: normal;
+	font-size: 17px;
+	display: inline;	
+	margin: 0;
+	padding: 0;
+}
+.names {
+	clear: both;
+}
+
+p {
+	text-align: justify;
+	letter-spacing: 0;
+}

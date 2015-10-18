@@ -1,0 +1,36 @@
+<?php
+if(isset($_SESSION["name"])){
+	header("Location: application.php");
+}
+include 'include/header.php';
+?>
+
+<div class="container">
+	<div class="row">
+		<div class="col-md-5 col-md-offset-3">
+			<?php
+				if(isset($_SESSION["registered"])){
+				echo "<div class='alert alert-success'>".$_SESSION["registered"]. "</div>";
+				unset($_SESSION["registered"]);
+				}
+			?>
+			<legend>Create an account </legend>
+			<form id="signup" method="post" action="register_user.php">
+				<label for="username">Full name</label>
+				<input type="text" class="form-control" id="username" name="username" required>
+				<label for="password">Password</label>
+				<input type="password" class="form-control" id="password" name="password" required>
+				<br />
+				<button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
+			</form>
+			<br />
+			<div> Forgot your password? </div> <br />
+			<div> <a href="mailto:webdev@cs.earlham.edu?Subject=Password" target="_top">Contact us </a>to recover your password. </div>
+		</div>
+	</div>
+</div>
+
+
+<?php
+include 'include/footer.php';
+

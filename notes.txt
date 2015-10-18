@@ -1,0 +1,9 @@
+1 Biochemistry
+2 Biology
+3 Chemistry
+4 Computer Science
+5 Environmental Science
+6 Geology
+7 Mathematics 
+8 Museum Studies
+9 Physics and Astronomy

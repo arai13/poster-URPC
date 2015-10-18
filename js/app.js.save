@@ -1,0 +1,24 @@
+lar.module('valapp' []);
+
+valapp.filter('wordCounter', function () {
+	return function(value) {
+		if(value && typeof value === 'string') {
+			return value.trim().split(/\s+/).length;
+		} else {
+			return 0;
+		}
+	};
+});
+
+
+valapp.controller('MainCtrl', function($scope){
+	$scope.notesNode = {
+		text: ''
+	};
+	$scope.submitForm = function(isValid) {
+		if(isValid) {
+			alert("Application submitted.");
+		}
+	};
+});
+

@@ -1,0 +1,87 @@
+<?php
+
+include('./include/db_connect.php');
+include('./mpdf/mpdf.php');
+$conn = new mysqli("$host", "$username", "$password", "$db");
+$biochem = "SELECT * FROM applications WHERE department=1";
+$bio = "SELECT * FROM applications WHERE department=2";
+$chem = "SELECT * FROM applications WHERE department=3";
+$cs = "SELECT * FROM applications WHERE department=4";
+$env = "SELECT * FROM applications WHERE department=5";
+$geo = "SELECT * FROM applications WHERE department=6";
+$math = "SELECT * FROM applications WHERE department=7";
+$museum = "SELECT * FROM applications WHERE department=8";
+$physics = "SELECT * FROM applications WHERE department=9";
+$sql = array(
+	"I Biochemistry" => $biochem, 
+	"II Biology" => $bio, 
+	"III Chemistry" => $chem, 
+	"IV Computer Science" => $cs, 
+	"V Environmental Science" => $env, 
+	"VI Geology" => $geo, 
+	"VII Mathematics" => $math, 
+	"VII Museum Studies" => $museum, 
+	"IX Physics and Astronomy" => $physics
+);
+
+
+if ($conn->connect_error){
+	die("Connection to the db failed: ". $conn->connect_error);
+}
+
+$mpdf=new mPDF(); $stylesheet = file_get_contents('css/pdf.css'); $mpdf->WriteHTML($stylesheet,1); $mpdf->AddPage('P', 'Letter', 1); $mpdf->WriteHTML("<div 
+class='div_center'><br /><br />"); $mpdf->WriteHTML("<p style='font-size: 22px; text-align: center;'> PROCEEDINGS OF THE NATURAL SCIENCES DIVISION UNDERGRADUATE 
+RESEARCH POSTER CONFERENCE </p>"); $mpdf->WriteHTML("<br /><br /><br /><br />"); $mpdf->WriteHTML("<p style='font-size: 18px; text-align: center;'> EARLHAM 
+COLLEGE </p>"); $mpdf->WriteHTML("<p style='font-size: 18px; text-align: center;'> RICHMOND INDIANA </p>"); $mpdf->WriteHTML("<p style='font-size: 18px; 
+text-align: center;'> OCTOBER 23, 2015 </p>"); $mpdf->WriteHTML("<p style='font-size: 16px; text-align: center;'> COMMITTEE MEMBERS: </p>"); 
+$mpdf->WriteHTML("</div>"); $mpdf->WriteHTML("<span style='font-size: 18px; text-align: left;'><i> Students: </i></span>"); $mpdf->WriteHTML("<span 
+style='font-size: 16px; text-align: right;'><i> Faculty: </i> </span>");
+
+
+
+$mpdf->TOCpagebreak(array('toc-preHTML'=>'<h1> Contents </h1>'));
+
+
+$mpdf->AddPage('P', 'Letter', '1');
+$mpdf->WriteHTML('<columns column-count="2" column-gap="17" />');
+$mpdf->keepColumns=true;
+
+foreach($sql as $name=> $dep){
+	$result = $conn -> query($dep);
+	$mpdf->WriteHTML('<span class="text-align: center"> '.strtoupper($name).'</span>');
+	$letter = 'A';
+	$mpdf->TOC_Entry($name, 0);
+	if($result->num_rows > 0){
+		while($row = $result->fetch_assoc()){
+			$text = $row['abstract'];
+			$title = $row['title'];
+			$mpdf->TOC_Entry($title, 1);
+			$text = iconv("UTF-8", "UTF-8//IGNORE", $text);
+			$title = iconv("UTF-8", "UTF-8//IGNORE", $title);
+			$authors = explode(", ", $row['authors']);
+			foreach($authors as &$author){
+				echo $author . "<br />";
+				$mpdf->WriteHTML('<indexentry content="'.$author.'" />');
+			}
+			$mpdf->WriteHTML('<i> '. $letter .'. ' . $title. '</i> <br /><b>'. $row['authors'] . '</b> <br /><b> Faculty Advisor: '. $row['faculty'] . '</b><br /> <b>'. $row['institution'].", ". $row['city']. ", ". $row['state'] . " " . $row['postcode']. 
+			'<p>'.$text .'</p>' );
+			$letter++;
+		}
+	}
+	$mpdf->WriteHTML('<columnbreak />');
+}
+
+
+$mpdf->AddPage('P', 'Letter');
+$mpdf->TOC_Entry("X. ACKNOWLEDGEMENTS", 0);
+$mpdf->WriteHTML("X. ACKNOWLEDGEMENTS");
+
+$mpdf->AddPage('P', 'Letter');
+$mpdf->TOC_Entry("XI. AUTHORS AND FACULTY ADVISORS", 0);
+$mpdf->WriteHTML("XI. AUTHORS AND FACULTY ADVISORS");
+$mpdf->WriteHTML($out);
+$mpdf->InsertIndex();
+
+$mpdf->Output();
+
+exit();
